@@ -31,8 +31,8 @@ framework:
                 verify_host: false
             clockify.client:
                 base_uri: '%env(CLOCKIFY_API_BASE_URL)%'
-                auth_bearer: '%env(CLOCKIFY_API_TOKEN)%'
-                headers: 
+                headers:
+                    'X-Api-Key': '%env(CLOCKIFY_API_TOKEN)%'
                     Content-Type: 'application/json'
                     Accept: 'application/json'
                     Connection: 'keep-alive'
