@@ -12,13 +12,14 @@ use App\Dto\Keeping\Response\TasksResponseDto;
 use App\Dto\Keeping\Response\UserResponseDto;
 use App\Dto\Keeping\TaskDto;
 use App\Dto\Keeping\UserDto;
-use Symfony\Component\HttpFoundation\Request;
+use App\Service\Client\KeepingClient;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function current;
 
 class KeepingService
 {
-    public function __construct(private SerializerInterface $serializer, private HttpClientInterface $keepingClient)
+    public function __construct(private KeepingClient $keepingClient, private SerializerInterface $serializer)
     {
     }
 
@@ -38,10 +39,7 @@ class KeepingService
 
     public function getUser(OrganisationDto $organisationDto): UserDto
     {
-        $response = $this->keepingClient->request(
-            Request::METHOD_GET,
-            sprintf('%d/users/me', $organisationDto->id)
-        );
+        $response = $this->keepingClient->getUser($organisationDto->id);
 
         $userResponseDto = $this->serializer->deserialize($response->getContent(), UserResponseDto::class, 'json');
 
@@ -51,16 +49,7 @@ class KeepingService
     /** @return ClientDto[] */
     public function getClients(OrganisationDto $organisationDto, string $clientName = 'R2Group'): array
     {
-        $response = $this->keepingClient->request(
-            Request::METHOD_GET,
-            sprintf('%d/clients', $organisationDto->id),
-            [
-                'query' => [
-                    'state' => ['active'],
-                    'search_query' => 'R2Group'
-                ]
-            ]
-        );
+        $response = $this->keepingClient->getClients($organisationDto->id, $clientName);
 
         $clientsResponseDto = $this->serializer->deserialize(
             $response->getContent(),
@@ -74,7 +63,7 @@ class KeepingService
     /** @return OrganisationDto[] */
     public function getOrganisations(): array
     {
-        $response = $this->keepingClient->request(Request::METHOD_GET, 'organisations');
+        $response = $this->keepingClient->getOrganisations();
 
         $organisations = $this->serializer->deserialize(
             $response->getContent(),
@@ -88,17 +77,7 @@ class KeepingService
     /** @return ProjectDto[] */
     public function getProjects(OrganisationDto $organisationDto, ClientDto $clientDto, UserDto $userDto): array
     {
-        $response = $this->keepingClient->request(
-            Request::METHOD_GET,
-            sprintf('%d/projects', $organisationDto->id),
-            [
-                'query' => [
-                    'user_id' => $userDto->id,
-                    'client_id' => $clientDto->id,
-                    'state' => ['active']
-                ]
-            ],
-        );
+        $response = $this->keepingClient->getProjects($organisationDto->id, $clientDto->id, $userDto->id);
 
         return $this->serializer->deserialize($response->getContent(), ProjectsResponseDto::class, 'json')->projects;
     }
@@ -109,11 +88,7 @@ class KeepingService
         $options = $projectDto ? ['query' => ['project_id' => $projectDto->id]] : [];
 
         /** @return ProjectDto[] */
-        $response = $this->keepingClient->request(
-            Request::METHOD_GET,
-            sprintf('%d/tasks', $organisationDto->id),
-            $options,
-        );
+        $response = $this->keepingClient->getTasks($organisationDto->id, $projectDto->id);
 
         return $this->serializer->deserialize($response->getContent(), TasksResponseDto::class, 'json')->tasks;
     }
