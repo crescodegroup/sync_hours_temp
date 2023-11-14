@@ -1,9 +1,11 @@
 <?php
 
-use App\Dto\Clockify\TimeEntry\TimeEntryDto;
-use App\Dto\Clockify\User\UserDto;
+declare(strict_types=1);
+
+namespace App\Tests\Service;
+
 use App\Service\ClockifyService;
-use App\Service\SyncService;
+use App\Dto\Clockify\TimeEntry\TimeEntryDto;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -11,9 +13,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * @group clockify
  */
 class ClockifyServiceTest extends KernelTestCase
-{   
+{
     /** @test */
-    public function test_getTimeEntriesPreviousMonth()
+    public function testGetTimeEntriesPreviousMonth()
     {
         self::bootKernel();
         $container = static::getContainer();

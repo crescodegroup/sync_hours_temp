@@ -39,8 +39,15 @@ class ClockifyService
         return $collectTimeEntries;
     }
 
-    private function getTimeEntries(DateTimeInterface $start, DateTimeInterface $end, int $itemsPerPage = 5000, int $pageNr = 1)
-    {
+    /**
+     * @return TimeEntry[]
+     */
+    private function getTimeEntries(
+        DateTimeInterface $start,
+        DateTimeInterface $end,
+        int $itemsPerPage = 5000,
+        int $pageNr = 1
+    ): array {
         $response = $this->clockifyClient->getTimeEntries(
             $this->getWorkspaceId(),
             $this->getUserId(),
