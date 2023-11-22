@@ -17,8 +17,31 @@ class SyncService
 
     public function __invoke()
     {
+        $this->syncroniseAllToKeeping();
+    }
 
+    public function syncroniseAllToKeeping()
+    {
+        $this->syncroniseProjectsToKeeping();
+
+        //get clockify entries
         $entries = $this->clockifyService->getTimeEntriesPreviousMonth();
+
+        //add entries to keeping
+    }
+
+    public function syncroniseProjectsToKeeping()
+    {
+        //get clockify projects
+        $clockifyProjectDtos = $this->clockifyService->getProjects();
+
+        //get keeping client by name
+        $keepingClientDto = $this->keepingService->getClientByName('ECHC');
+        //get keeping projects by code with clockifyProjectId
+        $keepingProjectDtos = $this->keepingService->getProjectsByClientDto($keepingClientDto);
+
+        //add project into keeping that doesn't exist yet.
+        $keepingProjectDto = $this->keepingService->createProject($keepingClientDto, 'Test Project', 'clockifyId12345');
     }
 
     // create new client in keeping

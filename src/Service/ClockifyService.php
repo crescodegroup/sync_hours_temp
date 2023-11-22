@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\Clockify\Project\ProjectDto;
+use App\Dto\Clockify\Response\ProjectsResponseDto;
 use DateTimeZone;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -75,6 +77,13 @@ class ClockifyService
         $this->user = $this->serializer->deserialize($response->getContent(), UserDto::class, 'json');
 
         return $this->user;
+    }
+
+    public function getProjects(): array
+    {
+        $response = $this->clockifyClient->getProjects($this->getWorkspaceId(), ['query' => ['billable' => true]]);
+
+        return $this->serializer->deserialize($response->getContent(), ProjectDto::class . '[]', 'json');
     }
 
     private function getUserId(): string

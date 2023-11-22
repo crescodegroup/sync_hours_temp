@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Dto\Keeping;
+namespace App\Dto\Clockify\Project;
 
 readonly class ProjectDto
 {
     public function __construct(
-        public int $id,
+        public string $id,
+        public string $clientId,
+        public string $workspaceId,
         public string $name,
-        public string $code,
-        public string $state,
     ) {
     }
 }

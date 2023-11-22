@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Client;
 
+use App\Dto\Keeping\Request\ProjectRequestDto;
 use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -26,7 +27,7 @@ class KeepingClient implements HttpClientInterface
         );
     }
 
-    public function getClients(int $organisationId, string $searchQuery = null): ResponseInterface
+    public function getClients(int $organisationId, ?string $searchQuery = null): ResponseInterface
     {
         return $this->client->request(
             Request::METHOD_GET,
@@ -34,7 +35,7 @@ class KeepingClient implements HttpClientInterface
             [
                 'query' => [
                     'state' => ['active'],
-                    'search_query' => 'R2Group'
+                    'search_query' => $searchQuery
                 ]
             ]
         );
@@ -57,6 +58,25 @@ class KeepingClient implements HttpClientInterface
                     'state' => ['active']
                 ]
             ],
+        );
+    }
+
+    public function createProject(int $organisationId, array $body = []): ResponseInterface
+    {
+        return $this->client->request(
+            Request::METHOD_POST,
+            sprintf('%d/projects', $organisationId),
+            [
+                'json' => $body
+            ]
+        );
+    }
+
+    public function deleteProject(int $organisationId, int $projectId): ResponseInterface
+    {
+        return $this->client->request(
+            Request::METHOD_DELETE,
+            sprintf('%d/projects/%d', $organisationId, $projectId)
         );
     }
 

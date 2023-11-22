@@ -36,4 +36,13 @@ class ClockifyClient implements HttpClientInterface
             $queryParams
         );
     }
+
+    public function getProjects(string $workspaceId, array $queryParams = []): ResponseInterface
+    {
+        return $this->request(
+            Request::METHOD_GET,
+            sprintf('workspaces/%s/projects', $workspaceId),
+            $queryParams
+        );
+    }
 }
